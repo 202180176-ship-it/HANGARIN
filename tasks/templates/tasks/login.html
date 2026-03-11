@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | Hangarin</title>
+    <link rel="stylesheet" href="{% static 'tasks/theme.css' %}">
+</head>
+<body class="login-page">
+    <div class="login-scene"></div>
+    <main class="login-shell login-shell--compact">
+        <section class="login-panel">
+            <div class="login-card login-card--bare">
+                {% if form.non_field_errors %}
+                    <div class="message message--error">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post" class="editor-form editor-form--single">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group form-group--wide">
+                            <label class="sr-only" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="field-error">{{ field.errors|striptags }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% if next %}
+                        <input type="hidden" name="next" value="{{ next }}">
+                    {% endif %}
+                    <button class="button button--primary button--wide" type="submit">Enter Dashboard</button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

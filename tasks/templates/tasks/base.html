@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page_title }} | Hangarin</title>
+    <link rel="stylesheet" href="{% static 'tasks/theme.css' %}">
+</head>
+<body class="app-page">
+    <div class="app-scene">
+        <span class="app-scene__orb app-scene__orb--warm"></span>
+        <span class="app-scene__orb app-scene__orb--cool"></span>
+        <span class="app-scene__grid"></span>
+    </div>
+    <div class="shell" data-shell>
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand__copy">
+                    <h1>Hangarin</h1>
+                </div>
+            </div>
+            <div class="sidebar__section">
+                <nav class="nav">
+                    {% for item in nav_items %}
+                        <a class="nav__link {% if item.active %}is-active{% endif %}" href="{{ item.url }}">
+                            <span>{{ item.label }}</span>
+                        </a>
+                    {% endfor %}
+                </nav>
+            </div>
+        </aside>
+
+        <div class="shell__main">
+            <header class="topbar">
+                <button class="sidebar-toggle" type="button" data-sidebar-toggle aria-label="Toggle navigation">
+                    Menu
+                </button>
+                <div class="page-head">
+                    <h2>{{ page_title }}</h2>
+                    {% if page_description %}
+                        <p>{{ page_description }}</p>
+                    {% endif %}
+                </div>
+                <div class="topbar__actions">
+                    <div class="user-pill">
+                        <span class="user-pill__avatar">{{ request.user.username|slice:":1"|upper }}</span>
+                        <div>
+                            <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                            <span>{{ today|date:"M j, Y" }}</span>
+                        </div>
+                    </div>
+                    <form method="post" action="{% url 'tasks:logout' %}">
+                        {% csrf_token %}
+                        <button class="button button--ghost" type="submit">Log Out</button>
+                    </form>
+                </div>
+            </header>
+
+            <main class="content">
+                {% if messages %}
+                    <div class="message-stack">
+                        {% for message in messages %}
+                            <div class="message message--{{ message.tags|default:'info' }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const toggleButton = document.querySelector("[data-sidebar-toggle]");
+        const shell = document.querySelector("[data-shell]");
+        if (toggleButton && shell) {
+            toggleButton.addEventListener("click", () => {
+                shell.classList.toggle("sidebar-open");
+            });
+        }
+    </script>
+</body>
+</html>
