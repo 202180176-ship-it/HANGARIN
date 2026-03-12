@@ -1,4 +1,4 @@
-{% load static %}
+{% load static socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +36,25 @@
                     {% endif %}
                     <button class="button button--primary button--wide" type="submit">Enter Dashboard</button>
                 </form>
+                {% if google_oauth_enabled %}
+                    <div class="login-separator" aria-hidden="true">
+                        <span>or</span>
+                    </div>
+                    <form
+                        method="post"
+                        action="{% provider_login_url 'google' process='login' %}"
+                        class="social-login-form"
+                    >
+                        {% csrf_token %}
+                        {% if next %}
+                            <input type="hidden" name="next" value="{{ next }}">
+                        {% endif %}
+                        <button class="button button--wide social-button social-button--google" type="submit">
+                            <span class="social-button__mark">G</span>
+                            <span>Continue with Google</span>
+                        </button>
+                    </form>
+                {% endif %}
             </div>
         </section>
     </main>

@@ -45,6 +45,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "tasks",
 ]
 
@@ -54,6 +58,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -76,6 +81,10 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
 
 
 # Database
@@ -129,5 +138,35 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "/login/"
+ACCOUNT_LOGIN_REDIRECT_URL = LOGIN_REDIRECT_URL
+ACCOUNT_LOGOUT_REDIRECT_URL = LOGOUT_REDIRECT_URL
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
+SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "").strip()
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "").strip()
+GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+        "APPS": (
+            [
+                {
+                    "client_id": GOOGLE_CLIENT_ID,
+                    "secret": GOOGLE_CLIENT_SECRET,
+                    "key": "",
+                    "settings": {
+                        "scope": ["profile", "email"],
+                        "auth_params": {"access_type": "online"},
+                    },
+                }
+            ]
+            if GOOGLE_OAUTH_ENABLED
+            else []
+        ),
+    }
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

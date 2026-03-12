@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -45,6 +46,31 @@ class FrontendViewTests(TestCase):
             {"username": "viewer", "password": "safe-password-123"},
         )
         self.assertRedirects(response, reverse("tasks:dashboard"))
+
+    def test_login_page_hides_google_button_without_credentials(self):
+        response = self.client.get(reverse("tasks:login"))
+        self.assertNotContains(response, "Continue with Google")
+
+    @override_settings(
+        GOOGLE_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS={
+            "google": {
+                "SCOPE": ["profile", "email"],
+                "AUTH_PARAMS": {"access_type": "online"},
+                "APPS": [
+                    {
+                        "client_id": "test-client-id",
+                        "secret": "test-client-secret",
+                        "key": "",
+                    }
+                ],
+            }
+        },
+    )
+    def test_login_page_shows_google_button_when_configured(self):
+        response = self.client.get(reverse("tasks:login"))
+        self.assertContains(response, "Continue with Google")
+        self.assertContains(response, "/accounts/google/login/")
 
     def test_dashboard_renders_backend_data(self):
         self.client.force_login(self.user)

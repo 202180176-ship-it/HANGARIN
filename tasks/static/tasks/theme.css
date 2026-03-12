@@ -1435,6 +1435,44 @@ body.app-page {
     gap: 1.15rem;
 }
 
+.login-separator {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 1rem 0;
+    color: rgba(255, 248, 241, 0.78);
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.login-separator::before,
+.login-separator::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 248, 241, 0.32);
+}
+
+.social-login-form {
+    margin-top: 0.2rem;
+}
+
+.social-button {
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.social-button__mark {
+    display: inline-grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    font-weight: 700;
+}
+
 .login-card--bare .form-control {
     min-height: 4.15rem;
     padding: 1rem 1.35rem;
@@ -1468,6 +1506,19 @@ body.app-page {
     box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
         0 18px 34px rgba(16, 38, 63, 0.16);
+}
+
+.social-button--google {
+    border: 1px solid rgba(255, 248, 241, 0.62);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fffaf1;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        0 12px 30px rgba(16, 38, 63, 0.12);
+}
+
+.social-button--google:hover {
+    background: rgba(255, 255, 255, 0.14);
 }
 
 .login-card--bare .message--error {

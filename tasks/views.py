@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
@@ -68,7 +69,12 @@ class FrontendLoginView(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["today"] = timezone.localdate()
+        context.update(
+            {
+                "today": timezone.localdate(),
+                "google_oauth_enabled": settings.GOOGLE_OAUTH_ENABLED,
+            }
+        )
         return context
 
 
