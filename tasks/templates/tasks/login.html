@@ -23,47 +23,11 @@
 <body class="login-page">
     <div class="login-scene"></div>
     <main class="login-shell">
-        <section class="login-intro">
-            <div class="login-intro__panel">
-                <p class="eyebrow eyebrow--light">Material Admin</p>
-                <h1 class="login-intro__title">A cleaner command center for every operational detail.</h1>
-                <p class="login-intro__copy">
-                    Bring tasks, subtasks, notes, and priorities into one dashboard with
-                    fast access, clear summaries, and social sign-in.
-                </p>
-                <div class="login-metrics">
-                    <div class="login-metric">
-                        <span>Views</span>
-                        <strong>Dashboard</strong>
-                    </div>
-                    <div class="login-metric">
-                        <span>Providers</span>
-                        <strong>
-                            {% if google_oauth_enabled and github_oauth_enabled %}
-                                Google + GitHub
-                            {% elif google_oauth_enabled %}
-                                Google
-                            {% elif github_oauth_enabled %}
-                                GitHub
-                            {% else %}
-                                Username login
-                            {% endif %}
-                        </strong>
-                    </div>
-                    <div class="login-metric">
-                        <span>Updated</span>
-                        <strong>{{ today|date:"M j, Y" }}</strong>
-                    </div>
-                </div>
-            </div>
-        </section>
         <section class="login-panel">
             <div class="login-card">
                 <div class="login-card__header">
                     <a class="brand" href="{% url 'tasks:home' %}">
-                        <span class="brand__mark">H</span>
                         <span class="brand__copy">
-                            <span class="eyebrow">Workspace</span>
                             <h2>Hangarin</h2>
                         </span>
                     </a>
@@ -109,7 +73,6 @@
                                     <input type="hidden" name="next" value="{{ next }}">
                                 {% endif %}
                                 <button class="button button--wide social-button social-button--google" type="submit">
-                                    <span class="social-button__mark">G</span>
                                     <span>Continue with Google</span>
                                 </button>
                             </form>
@@ -125,7 +88,6 @@
                                     <input type="hidden" name="next" value="{{ next }}">
                                 {% endif %}
                                 <button class="button button--wide social-button social-button--github" type="submit">
-                                    <span class="social-button__mark">GH</span>
                                     <span>Continue with GitHub</span>
                                 </button>
                             </form>

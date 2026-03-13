@@ -169,7 +169,7 @@ a {
 .sidebar__section {
     position: relative;
     z-index: 1;
-    padding: 1.1rem;
+    padding: 0.95rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: var(--ma-radius-lg);
     background: rgba(255, 255, 255, 0.06);
@@ -194,7 +194,6 @@ a {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
-    margin-top: 0.9rem;
 }
 
 .nav__link {
@@ -368,12 +367,12 @@ a {
     font-weight: 700;
 }
 
-.user-pill strong,
-.user-pill span {
+.user-pill > div strong,
+.user-pill > div span {
     display: block;
 }
 
-.user-pill span:last-child {
+.user-pill > div span:last-child {
     color: var(--ma-muted);
     font-size: 0.9rem;
 }
@@ -955,83 +954,20 @@ a {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 440px);
-    width: min(1180px, 100%);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 32px;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 40px 100px rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(18px);
-}
-
-.login-intro,
-.login-panel {
-    position: relative;
-    padding: 2.2rem;
-}
-
-.login-intro {
-    display: flex;
-    align-items: stretch;
-    min-height: 700px;
-    background:
-        radial-gradient(circle at top right, rgba(255, 255, 255, 0.12), transparent 24%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.08));
-    color: #fff;
-}
-
-.login-intro__panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    max-width: 38rem;
-}
-
-.login-intro__title {
-    margin: 0.8rem 0 0;
-    font-family: "Space Grotesk", sans-serif;
-    font-size: clamp(2.8rem, 5vw, 4.8rem);
-    line-height: 0.98;
-    letter-spacing: -0.06em;
-}
-
-.login-intro__copy {
-    max-width: 30rem;
-    color: rgba(255, 255, 255, 0.76);
-}
-
-.login-metric {
-    padding: 1rem 1.05rem;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-}
-
-.login-metric span {
-    display: block;
-    margin-bottom: 0.35rem;
-    color: rgba(255, 255, 255, 0.64);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-}
-
-.login-metric strong {
-    font-family: "Space Grotesk", sans-serif;
-    font-size: 1.1rem;
+    grid-template-columns: minmax(320px, 440px);
+    justify-content: center;
+    width: min(440px, 100%);
 }
 
 .login-panel {
     display: grid;
     place-items: center;
-    background: rgba(242, 246, 255, 0.96);
+    padding: 0;
+    background: transparent;
 }
 
 .login-card {
-    width: min(100%, 370px);
+    width: min(100%, 420px);
     background: rgba(255, 255, 255, 0.92);
 }
 
@@ -1082,17 +1018,6 @@ a {
     gap: 0.75rem;
 }
 
-.social-button__mark {
-    display: inline-grid;
-    place-items: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.18);
-    font-size: 0.88rem;
-    font-weight: 800;
-}
-
 .social-button--google {
     background: linear-gradient(135deg, #ffffff, #eef3ff);
     border-color: rgba(66, 133, 244, 0.18);
@@ -1103,10 +1028,6 @@ a {
     background: linear-gradient(135deg, #1f2937, #111827);
     border-color: rgba(17, 24, 39, 0.18);
     color: #fff;
-}
-
-.social-button--github .social-button__mark {
-    background: rgba(255, 255, 255, 0.12);
 }
 
 .sidebar-toggle {
@@ -1155,18 +1076,12 @@ a {
 @media (max-width: 1120px) {
     .stats-grid,
     .insight-grid,
-    .metric-grid,
-    .login-metrics {
+    .metric-grid {
         grid-template-columns: 1fr 1fr;
     }
 
-    .hero-card--feature,
-    .login-shell {
+    .hero-card--feature {
         grid-template-columns: 1fr;
-    }
-
-    .login-intro {
-        min-height: auto;
     }
 }
 
@@ -1189,8 +1104,7 @@ a {
     .insight-grid,
     .metric-grid,
     .summary-pills,
-    .form-grid,
-    .login-metrics {
+    .form-grid {
         grid-template-columns: 1fr;
     }
 

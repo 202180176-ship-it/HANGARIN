@@ -3,7 +3,6 @@
 {% block content %}
     <section class="hero-card hero-card--feature">
         <div class="hero-card__body">
-            <p class="eyebrow">Operations Pulse</p>
             <h3>Welcome back, {{ request.user.get_short_name|default:request.user.username }}</h3>
             <p class="hero-card__copy">
                 Today is {{ today|date:"l, F j, Y" }}. Monitor task flow, recent movement,
