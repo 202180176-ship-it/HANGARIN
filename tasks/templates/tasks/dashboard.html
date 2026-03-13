@@ -5,10 +5,19 @@
         <div class="hero-card__body">
             <p class="eyebrow">Operations Pulse</p>
             <h3>Welcome back, {{ request.user.get_short_name|default:request.user.username }}</h3>
-            <p class="hero-card__copy">Today is {{ today|date:"l, F j, Y" }}.</p>
+            <p class="hero-card__copy">
+                Today is {{ today|date:"l, F j, Y" }}. Monitor task flow, recent movement,
+                and deadline pressure from one admin surface.
+            </p>
             <div class="hero-actions">
-                <a class="button button--primary" href="{% url 'tasks:task-list' %}">View Tasks</a>
-                <a class="button button--ghost" href="{% url 'tasks:task-create' %}">Create Task</a>
+                <a class="button button--primary" href="{% url 'tasks:task-list' %}">
+                    <span class="material-symbols-rounded">view_kanban</span>
+                    <span>View Tasks</span>
+                </a>
+                <a class="button button--ghost" href="{% url 'tasks:task-create' %}">
+                    <span class="material-symbols-rounded">add_circle</span>
+                    <span>Create Task</span>
+                </a>
             </div>
         </div>
         <div class="hero-stack">
@@ -37,6 +46,7 @@
                     <p class="eyebrow">Status Flow</p>
                     <h3>Task Status Overview</h3>
                 </div>
+                <span class="panel__hint">Live completion mix</span>
             </div>
             <div class="progress-stack">
                 {% for item in status_breakdown %}
@@ -59,6 +69,7 @@
                     <p class="eyebrow">Category Loadout</p>
                     <h3>Top Categories</h3>
                 </div>
+                <span class="panel__hint">Most active buckets</span>
             </div>
             <div class="list-block">
                 {% if category_highlights %}
@@ -82,6 +93,7 @@
                     <p class="eyebrow">Recent Activity</p>
                     <h3>Latest Task Updates</h3>
                 </div>
+                <span class="panel__hint">Recently changed items</span>
             </div>
             <div class="table-wrap">
                 <table class="data-table">
@@ -121,6 +133,7 @@
                     <p class="eyebrow">Schedule Watch</p>
                     <h3>Upcoming Deadlines</h3>
                 </div>
+                <span class="panel__hint">Closest due dates</span>
             </div>
             <div class="list-block">
                 {% for task in upcoming_deadlines %}

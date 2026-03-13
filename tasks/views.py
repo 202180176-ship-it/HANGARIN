@@ -20,13 +20,13 @@ from .forms import (
 from .models import Category, Note, Priority, StatusChoices, SubTask, Task
 
 NAVIGATION = (
-    {"section": "dashboard", "label": "Dashboard", "icon": "D", "url_name": "tasks:dashboard"},
-    {"section": "tasks", "label": "Tasks", "icon": "T", "url_name": "tasks:task-list"},
-    {"section": "subtasks", "label": "Sub Tasks", "icon": "S", "url_name": "tasks:subtask-list"},
-    {"section": "categories", "label": "Categories", "icon": "C", "url_name": "tasks:category-list"},
-    {"section": "priorities", "label": "Priorities", "icon": "P", "url_name": "tasks:priority-list"},
-    {"section": "notes", "label": "Notes", "icon": "N", "url_name": "tasks:note-list"},
-    {"section": "admin", "label": "Admin", "icon": "A", "url_name": "admin:index"},
+    {"section": "dashboard", "label": "Dashboard", "icon": "dashboard", "url_name": "tasks:dashboard"},
+    {"section": "tasks", "label": "Tasks", "icon": "task_alt", "url_name": "tasks:task-list"},
+    {"section": "subtasks", "label": "Sub Tasks", "icon": "account_tree", "url_name": "tasks:subtask-list"},
+    {"section": "categories", "label": "Categories", "icon": "category", "url_name": "tasks:category-list"},
+    {"section": "priorities", "label": "Priorities", "icon": "flag", "url_name": "tasks:priority-list"},
+    {"section": "notes", "label": "Notes", "icon": "sticky_note_2", "url_name": "tasks:note-list"},
+    {"section": "admin", "label": "Admin", "icon": "admin_panel_settings", "url_name": "admin:index"},
 )
 
 
@@ -73,6 +73,7 @@ class FrontendLoginView(LoginView):
             {
                 "today": timezone.localdate(),
                 "google_oauth_enabled": settings.GOOGLE_OAUTH_ENABLED,
+                "github_oauth_enabled": settings.GITHUB_OAUTH_ENABLED,
             }
         )
         return context

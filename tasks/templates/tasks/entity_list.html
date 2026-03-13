@@ -4,10 +4,14 @@
     <section class="panel panel--spacious">
         <div class="panel__header panel__header--spread">
             <div>
+                <p class="eyebrow">Directory</p>
                 <h3>{{ page_title }}</h3>
                 <p class="panel__copy">{{ page_description }}</p>
             </div>
-            <a class="button button--primary" href="{{ create_url }}">{{ create_label }}</a>
+            <a class="button button--primary" href="{{ create_url }}">
+                <span class="material-symbols-rounded">add</span>
+                <span>{{ create_label }}</span>
+            </a>
         </div>
 
         {% if summary_pills %}
@@ -30,10 +34,16 @@
                     value="{{ query }}"
                     placeholder="{{ search_placeholder }}"
                 >
-                <button class="button button--ghost" type="submit">Search</button>
+                <button class="button button--ghost" type="submit">
+                    <span class="material-symbols-rounded">search</span>
+                    <span>Search</span>
+                </button>
             </form>
             {% if query %}
-                <a class="button button--ghost button--compact" href="{{ request.path }}">Clear</a>
+                <a class="button button--ghost button--compact" href="{{ request.path }}">
+                    <span class="material-symbols-rounded">close</span>
+                    <span>Clear</span>
+                </a>
             {% endif %}
         </div>
 
@@ -60,7 +70,10 @@
                                 </td>
                             {% endfor %}
                             <td>
-                                <a class="table-action" href="{{ row.action_url }}">{{ row.action_label }}</a>
+                                <a class="table-action" href="{{ row.action_url }}">
+                                    <span class="material-symbols-rounded">edit</span>
+                                    <span>{{ row.action_label }}</span>
+                                </a>
                             </td>
                         </tr>
                     {% empty %}
@@ -75,11 +88,17 @@
         {% if is_paginated %}
             <div class="pagination">
                 {% if page_obj.has_previous %}
-                    <a class="button button--ghost" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">Previous</a>
+                    <a class="button button--ghost" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">
+                        <span class="material-symbols-rounded">chevron_left</span>
+                        <span>Previous</span>
+                    </a>
                 {% endif %}
-                <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                <span class="pagination__summary">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
                 {% if page_obj.has_next %}
-                    <a class="button button--ghost" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">Next</a>
+                    <a class="button button--ghost" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">
+                        <span>Next</span>
+                        <span class="material-symbols-rounded">chevron_right</span>
+                    </a>
                 {% endif %}
             </div>
         {% endif %}

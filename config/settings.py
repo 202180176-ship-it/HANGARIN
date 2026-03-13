@@ -17,6 +17,24 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def load_env_file(env_path):
+    if not env_path.exists():
+        return
+
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
+load_env_file(BASE_DIR / ".env")
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -49,6 +67,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
     "tasks",
 ]
 
@@ -147,6 +166,9 @@ SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "").strip()
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "").strip()
 GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID", "").strip()
+GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET", "").strip()
+GITHUB_OAUTH_ENABLED = bool(GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET)
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": ["profile", "email"],
@@ -166,7 +188,24 @@ SOCIALACCOUNT_PROVIDERS = {
             if GOOGLE_OAUTH_ENABLED
             else []
         ),
-    }
+    },
+    "github": {
+        "SCOPE": ["read:user", "user:email"],
+        "APPS": (
+            [
+                {
+                    "client_id": GITHUB_CLIENT_ID,
+                    "secret": GITHUB_CLIENT_SECRET,
+                    "key": "",
+                    "settings": {
+                        "scope": ["read:user", "user:email"],
+                    },
+                }
+            ]
+            if GITHUB_OAUTH_ENABLED
+            else []
+        ),
+    },
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

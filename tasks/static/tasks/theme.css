@@ -666,7 +666,7 @@ a {
     padding: 2rem;
     background-image:
         linear-gradient(135deg, rgba(8, 20, 32, 0.36), rgba(16, 48, 58, 0.18)),
-        url("login-background.png");
+        url("login-background.gif");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -1400,7 +1400,7 @@ body.app-page {
     position: relative;
     background-image:
         linear-gradient(135deg, rgba(8, 20, 32, 0.24), rgba(16, 48, 58, 0.08)),
-        url("login-background.png");
+        url("login-background.gif");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -1456,6 +1456,12 @@ body.app-page {
 
 .social-login-form {
     margin-top: 0.2rem;
+}
+
+.social-login-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
 }
 
 .social-button {
@@ -1519,6 +1525,19 @@ body.app-page {
 
 .social-button--google:hover {
     background: rgba(255, 255, 255, 0.14);
+}
+
+.social-button--github {
+    border: 1px solid rgba(255, 248, 241, 0.62);
+    background: rgba(9, 16, 29, 0.42);
+    color: #fffaf1;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        0 12px 30px rgba(16, 38, 63, 0.16);
+}
+
+.social-button--github:hover {
+    background: rgba(9, 16, 29, 0.56);
 }
 
 .login-card--bare .message--error {

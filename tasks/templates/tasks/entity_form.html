@@ -8,7 +8,10 @@
                 <h3>{{ form_title }}</h3>
                 <p class="panel__copy">{{ form_description }}</p>
             </div>
-            <a class="button button--ghost button--compact" href="{{ cancel_url }}">Back</a>
+            <a class="button button--ghost button--compact" href="{{ cancel_url }}">
+                <span class="material-symbols-rounded">arrow_back</span>
+                <span>Back</span>
+            </a>
         </div>
 
         <form method="post" class="editor-form">
@@ -38,8 +41,14 @@
             </div>
 
             <div class="form-actions">
-                <button class="button button--primary" type="submit">{{ submit_label }}</button>
-                <a class="button button--ghost" href="{{ cancel_url }}">Cancel</a>
+                <button class="button button--primary" type="submit">
+                    <span class="material-symbols-rounded">save</span>
+                    <span>{{ submit_label }}</span>
+                </button>
+                <a class="button button--ghost" href="{{ cancel_url }}">
+                    <span class="material-symbols-rounded">close</span>
+                    <span>Cancel</span>
+                </a>
             </div>
         </form>
     </section>

@@ -50,6 +50,7 @@ class FrontendViewTests(TestCase):
     def test_login_page_hides_google_button_without_credentials(self):
         response = self.client.get(reverse("tasks:login"))
         self.assertNotContains(response, "Continue with Google")
+        self.assertNotContains(response, "Continue with GitHub")
 
     @override_settings(
         GOOGLE_OAUTH_ENABLED=True,
@@ -71,6 +72,26 @@ class FrontendViewTests(TestCase):
         response = self.client.get(reverse("tasks:login"))
         self.assertContains(response, "Continue with Google")
         self.assertContains(response, "/accounts/google/login/")
+
+    @override_settings(
+        GITHUB_OAUTH_ENABLED=True,
+        SOCIALACCOUNT_PROVIDERS={
+            "github": {
+                "SCOPE": ["read:user", "user:email"],
+                "APPS": [
+                    {
+                        "client_id": "test-client-id",
+                        "secret": "test-client-secret",
+                        "key": "",
+                    }
+                ],
+            }
+        },
+    )
+    def test_login_page_shows_github_button_when_configured(self):
+        response = self.client.get(reverse("tasks:login"))
+        self.assertContains(response, "Continue with GitHub")
+        self.assertContains(response, "/accounts/github/login/")
 
     def test_dashboard_renders_backend_data(self):
         self.client.force_login(self.user)
