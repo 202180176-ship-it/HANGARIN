@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Force html and body to take full height */
+        html, body { height: 100%; margin: 0; }
+
+        /* The main wrapper filling the screen */
+        .wrapper { display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar: Column layout, pushes footer down */
+        .sidebar { 
+            width: 250px; 
+            background: #2c3e50; 
+            display: flex; 
+            flex-direction: column; /* Stacks items vertically */
+            flex-shrink: 0;        /* Prevents sidebar from shrinking */
+        }
+
+        /* Nav grows to fill middle space, pushing logout button to bottom */
+        .nav-wrapper { flex-grow: 1; }
+
+        /* Main content: Scrolls only this part */
+        .main-content { 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="sidebar p-3 text-white">
+            <h4>Hangarin Admin</h4>
+            <hr>
+            <div class="nav-wrapper">
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a href="{% url 'dashboard' %}" class="nav-link text-white {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'task_list' %}" class="nav-link text-white {% if 'tasks' in request.path %}active{% endif %}">Tasks</a>
+                    </li>
+                </ul>
+            </div>
+
+            <hr>
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="nav-link text-danger border-0 bg-transparent w-100 text-start">
+                    Logout
+                </button>
+            </form>
+        </div>
+
+        <div class="main-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

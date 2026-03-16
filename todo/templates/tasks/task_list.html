@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4 d-flex flex-column">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Hangarin Tasks</h2>
+        <form method="GET" action="{% url 'task_list' %}" class="d-flex gap-2 w-75 justify-content-end">
+            <select name="status" class="form-select" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                <option value="Pending" {% if request.GET.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Completed" {% if request.GET.status == 'Completed' %}selected{% endif %}>Completed</option>
+            </select>
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search..." value="{{ request.GET.q|default:'' }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+            <a href="{% url 'create_task' %}" class="btn btn-primary shadow-sm text-nowrap">+ Add New Task</a>
+        </form>
+    </div>
+
+    <div class="grow 1" style="min-height: 65vh;">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for task in tasks %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 rounded-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title text-primary fw-bold mb-0">{{ task.title }}</h5>
+                                <span class="badge {% if task.priority.name == 'High' %}bg-danger{% else %}bg-info text-dark{% endif %}">
+                                    {{ task.priority.name }}
+                                </span>
+                            </div>
+
+                            <p class="mb-1 small text-muted">
+                                <strong>Category:</strong> {{ task.category.name|default:"Uncategorized" }}
+                            </p>
+                            <p class="mb-1 small">
+                                <strong>Status:</strong> 
+                                <span class="text-{% if task.status == 'Completed' %}success{% else %}warning text-dark{% endif %} fw-bold">
+                                    {{ task.status }}
+                                </span>
+                            </p>
+
+                            <p class="mb-2 small">
+                                <strong>Deadline:</strong> 
+                                <span class="text-danger">{{ task.deadline|date:"M d, Y"|default:"No Date" }}</span>
+                            </p>
+                            
+                            <div class="mt-2 border-top pt-2">
+                                <p class="small fw-bold mb-1 text-secondary">Notes:</p>
+                                {% for note in task.notes.all %}
+                                    <div class="small text-secondary mb-1">
+                                        <em>• {{ note.content }}</em>
+                                    </div>
+                                {% empty %}
+                                    <small class="text-muted">No notes available.</small>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="card-footer bg-white border-0 d-flex gap-2">
+                            <a href="{% url 'complete_task' task.id %}" class="btn btn-sm btn-outline-success">Complete</a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal" 
+                                    data-delete-url="{% url 'delete_task' task.id %}">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No tasks found matching your criteria.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <nav aria-label="Page navigation" class="mt-5 mb-5">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not tasks.has_previous %}disabled{% endif %}">
+                <a class="page-link" href="?page=1&status={{ request.GET.status|default:'' }}&q={{ request.GET.q|default:'' }}">Previous</a>
+            </li>
+            {% for num in tasks.paginator.page_range %}
+                {% if tasks.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% elif num > tasks.number|add:'-3' and num < tasks.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&status={{ request.GET.status|default:'' }}&q={{ request.GET.q|default:'' }}">{{ num }}</a>
+                    </li>
+                {% elif num == 1 or num == tasks.paginator.num_pages %}
+                     <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&status={{ request.GET.status|default:'' }}&q={{ request.GET.q|default:'' }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item {% if not tasks.has_next %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ tasks.paginator.num_pages }}&status={{ request.GET.status|default:'' }}&q={{ request.GET.q|default:'' }}">Next</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Confirm Delete</h5></div>
+      <div class="modal-body">Are you sure you want to delete this task?</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        document.getElementById('confirmDeleteBtn').href = button.getAttribute('data-delete-url');
+    });
+</script>
+{% endblock %}

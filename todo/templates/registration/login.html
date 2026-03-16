@@ -1,0 +1,93 @@
+{% extends "base_auth.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<style>
+
+body{
+    background-image: url("{% static 'images/p.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height:100vh;}
+
+.login-box{
+    background:#d9d9d9;
+    padding:40px;
+    border-radius:8px;
+    width:350px;
+    margin:auto;
+    margin-top:120px;
+    color:black;
+}
+
+.login-box h3{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.form-control{
+    background:transparent;
+    border:none;
+    border-bottom:2px solid #000000;
+    border-radius:0;
+    color:white;
+}
+
+.form-control:focus{
+    background:transparent;
+    color:white;
+    box-shadow:none;
+}
+
+.btn-login{
+    background:#000000;
+    border:none;
+    width:100%;
+}
+
+.register-text{
+    text-align:center;
+    margin-top:15px;
+}
+
+.register-text a{
+    color:#000000;
+}
+
+</style>
+
+<div class="login-box">
+
+    <h3>Hangarin Login</h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <p style="color: red;">Invalid username or password. Please try again.</p>
+        {% endif %}
+
+        <div class="mb-4">
+            <label>Email</label>
+            <input type="text" name="username" class="form-control">
+        </div>
+
+        <div class="mb-4">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control">
+        </div>
+
+        <button type="submit" class="btn btn-login">Login</button>
+
+    </form>
+
+    <div class="register-text">
+        Don't have an account? <a href="#">Register</a>
+    </div>
+
+</div>
+
+{% endblock %}
