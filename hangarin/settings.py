@@ -10,22 +10,69 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def load_env_file(env_path):
+    if not env_path.exists():
+        return
+
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
+load_env_file(BASE_DIR / ".env")
+
+
+def env_list(name, default=""):
+    return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
+
+
+def env_first(*names, default=""):
+    for name in names:
+        value = os.getenv(name, "").strip()
+        if value:
+            return value
+    return default
+
+
+def build_social_app(name, client_id_names, secret_names):
+    client_id = env_first(*client_id_names)
+    secret = env_first(*secret_names)
+    if not client_id or not secret:
+        return None
+    return {
+        "name": name,
+        "client_id": client_id,
+        "secret": secret,
+    }
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pa=ja3w4ik6w3(r+h$v&*5_7f^-(bu=xyqoz@5^=59=h%s72_!'
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-pa=ja3w4ik6w3(r+h$v&*5_7f^-(bu=xyqoz@5^=59=h%s72_!",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in {"1", "true", "yes", "on"}
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,testserver")
+CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 
 # Application definition
@@ -40,13 +87,13 @@ INSTALLED_APPS =[
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    # Include your specific providers below, e.g.:
-    # "allauth.socialaccount.providers.google",
-    
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.github",
     
     'todo',
 ]
@@ -136,8 +183,42 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
+SITE_ID = int(os.getenv("DJANGO_SITE_ID", "1"))
 LOGIN_REDIRECT_URL = 'task_list'
 LOGOUT_REDIRECT_URL = '/'
+AUTHENTICATION_BACKENDS = [
+    "todo.auth_backends.EmailOrUsernameModelBackend",
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+google_social_app = build_social_app(
+    "Google",
+    ("GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_CLIENT_ID"),
+    ("GOOGLE_OAUTH_CLIENT_SECRET", "GOOGLE_CLIENT_SECRET"),
+)
+github_social_app = build_social_app(
+    "GitHub",
+    ("GITHUB_OAUTH_CLIENT_ID", "GITHUB_CLIENT_ID"),
+    ("GITHUB_OAUTH_CLIENT_SECRET", "GITHUB_CLIENT_SECRET"),
+)
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+            "prompt": "select_account",
+        },
+        **({"APPS": [google_social_app]} if google_social_app else {}),
+    },
+    "github": {
+        "SCOPE": ["read:user", "user:email"],
+        **({"APPS": [github_social_app]} if github_social_app else {}),
+    },
+}
 
 
 UNFOLD = {

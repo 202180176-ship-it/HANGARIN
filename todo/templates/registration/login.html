@@ -1,93 +1,95 @@
 {% extends "base_auth.html" %}
-
-{% load static %}
+{% load socialaccount %}
 
 {% block content %}
+<section class="auth-card">
+    <div class="auth-card-header">
+        <p class="auth-kicker">Hangarin</p>
+        <h1>Sign in to your workspace</h1>
+        <p class="auth-copy">
+            Keep the familiar background, use your email and password, or continue with Google or GitHub.
+        </p>
+    </div>
 
-<style>
-
-body{
-    background-image: url("{% static 'images/p.jpg' %}");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height:100vh;}
-
-.login-box{
-    background:#d9d9d9;
-    padding:40px;
-    border-radius:8px;
-    width:350px;
-    margin:auto;
-    margin-top:120px;
-    color:black;
-}
-
-.login-box h3{
-    text-align:center;
-    margin-bottom:30px;
-}
-
-.form-control{
-    background:transparent;
-    border:none;
-    border-bottom:2px solid #000000;
-    border-radius:0;
-    color:white;
-}
-
-.form-control:focus{
-    background:transparent;
-    color:white;
-    box-shadow:none;
-}
-
-.btn-login{
-    background:#000000;
-    border:none;
-    width:100%;
-}
-
-.register-text{
-    text-align:center;
-    margin-top:15px;
-}
-
-.register-text a{
-    color:#000000;
-}
-
-</style>
-
-<div class="login-box">
-
-    <h3>Hangarin Login</h3>
-
-    <form method="post">
+    <form method="post" class="auth-form">
         {% csrf_token %}
 
         {% if form.errors %}
-        <p style="color: red;">Invalid username or password. Please try again.</p>
+            <div class="auth-alert">
+                Invalid email, username, or password. Please try again.
+            </div>
         {% endif %}
 
-        <div class="mb-4">
-            <label>Email</label>
-            <input type="text" name="username" class="form-control">
+        <div class="auth-field">
+            <label for="id_username">Email or Username</label>
+            <input
+                id="id_username"
+                type="text"
+                name="username"
+                class="form-control auth-input"
+                value="{{ form.username.value|default:'' }}"
+                placeholder="Enter your email or username"
+                autocomplete="username"
+                required
+            >
         </div>
 
-        <div class="mb-4">
-            <label>Password</label>
-            <input type="password" name="password" class="form-control">
+        <div class="auth-field">
+            <label for="id_password">Password</label>
+            <input
+                id="id_password"
+                type="password"
+                name="password"
+                class="form-control auth-input"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+            >
         </div>
 
-        <button type="submit" class="btn btn-login">Login</button>
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
 
+        <button type="submit" class="btn auth-submit">Sign In</button>
     </form>
 
-    <div class="register-text">
-        Don't have an account? <a href="#">Register</a>
+    <div class="auth-divider">
+        <span>Or</span>
     </div>
 
-</div>
+    <div class="auth-social-list">
+        {% if google_login_enabled %}
+            {% provider_login_url "google" process="login" as google_login_url %}
+            <a href="{{ google_login_url }}" class="auth-social-button">
+                <span class="auth-social-icon">G</span>
+                <span>Continue with Google</span>
+            </a>
+        {% else %}
+            <div class="auth-social-button auth-social-disabled" aria-disabled="true">
+                <span class="auth-social-icon">G</span>
+                <span>Continue with Google</span>
+            </div>
+        {% endif %}
 
+        {% if github_login_enabled %}
+            {% provider_login_url "github" process="login" as github_login_url %}
+            <a href="{{ github_login_url }}" class="auth-social-button">
+                <span class="auth-social-icon">GH</span>
+                <span>Continue with GitHub</span>
+            </a>
+        {% else %}
+            <div class="auth-social-button auth-social-disabled" aria-disabled="true">
+                <span class="auth-social-icon">GH</span>
+                <span>Continue with GitHub</span>
+            </div>
+        {% endif %}
+
+        {% if not google_login_enabled or not github_login_enabled %}
+            <div class="auth-provider-note">
+                Set `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GITHUB_OAUTH_CLIENT_ID`, and `GITHUB_OAUTH_CLIENT_SECRET` to activate social sign-in.
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}
