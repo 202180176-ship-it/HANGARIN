@@ -69,10 +69,16 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# IMPORTANT: In Vercel, set DJANGO_DEBUG to "False"
 DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in {"1", "true", "yes", "on"}
 
-ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost,testserver,hangarin-navy.vercel.app,.vercel.app,richo.pythonanywhere.com")
-CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", "https://hangarin-navy.vercel.app,https://richo.pythonanywhere.com")
+# Explicitly add your deployment domains to ensure they are always allowed.
+# '.vercel.app' allows all Vercel subdomains (previews and production).
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "testserver", "hangarin-navy.vercel.app", ".vercel.app", "richo.pythonanywhere.com"]
+ALLOWED_HOSTS += env_list("DJANGO_ALLOWED_HOSTS")
+
+CSRF_TRUSTED_ORIGINS = ["https://hangarin-navy.vercel.app", "https://richo.pythonanywhere.com"]
+CSRF_TRUSTED_ORIGINS += env_list("DJANGO_CSRF_TRUSTED_ORIGINS")
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
