@@ -69,8 +69,8 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# IMPORTANT: In Vercel, set DJANGO_DEBUG to "False"
-DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in {"1", "true", "yes", "on"}
+# TEMPORARY: Enabling DEBUG to troubleshoot Server Error (500)
+DEBUG = True
 
 # Explicitly add your deployment domains to ensure they are always allowed.
 # '.vercel.app' allows all Vercel subdomains (previews and production).

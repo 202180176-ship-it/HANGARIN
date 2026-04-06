@@ -1,7 +1,8 @@
 venv/
 .venv/
 Hangad/
-db.sqlite3
+# db.sqlite3 (Commented out to push database to Vercel)
+# db.sqlite3
 __pycache__/
 *.pyc
 .env
