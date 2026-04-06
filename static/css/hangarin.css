@@ -29,10 +29,10 @@ body {
 body {
     margin: 0;
     color: var(--text-main);
-    background:
-        radial-gradient(circle at top left, rgba(63, 126, 232, 0.12), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.07), transparent 24%),
-        linear-gradient(180deg, #eef4ff 0%, #f8fafc 30%, #f3f6fb 100%);
+    background: 
+        radial-gradient(circle at top left, rgba(63, 126, 232, 0.18), transparent 45%),
+        radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.1), transparent 35%),
+        url('../images/background.png') center center / cover no-repeat fixed;
     font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
 }
 
