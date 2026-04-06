@@ -48,10 +48,12 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         "DJANGO_ALLOWED_HOSTS",
-        "127.0.0.1,localhost,testserver,richo.pythonanywhere.com",
+        "127.0.0.1,localhost,testserver,richo.pythonanywhere.com,192.168.100.14",
     ).split(",")
     if host.strip()
 ]
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '192.168.1.15'] # Replace with your IP
 
 
 # Application definition
@@ -69,6 +71,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
     "tasks",
+    "pwa",
 ]
 
 MIDDLEWARE = [
@@ -154,6 +157,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/dashboard/"
@@ -210,3 +214,36 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# --- Progressive Web App Settings ---
+PWA_APP_NAME = 'Hangarin'
+PWA_APP_DESCRIPTION = "A Progressive Web App version of Hangarin"
+PWA_APP_THEME_COLOR = '#0A0A0A'
+PWA_APP_BACKGROUND_COLOR = '#FFFFFF'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'portrait'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/tasks/icon-192.png',
+        'sizes': '192x192'
+    },
+    {
+        'src': '/static/tasks/icon-512.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/tasks/icon-192.png',
+        'sizes': '192x192'
+    },
+    {
+        'src': '/static/tasks/icon-512.png',
+        'sizes': '512x512'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static', 'js', 'serviceworker.js')
