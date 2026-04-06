@@ -49,6 +49,7 @@ ALLOWED_HOSTS = [
     'localhost',
     'testserver',
     'richo.pythonanywhere.com',
+    'richo1.pythonanywhere.com',
     '192.168.100.14',
     'lithological-midsize-polyphonically.ngrok-free.app',
     '*' # Allows access from any ngrok URL automatically
