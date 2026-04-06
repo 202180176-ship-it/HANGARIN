@@ -14,11 +14,14 @@ git push origin main
 
 if %errorlevel% neq 0 (
     echo.
-    echo [!] PUSH FAILED. This usually means you need to log in.
+    echo [!] PUSH FAILED (Error 403: Forbidden). 
+    echo This means your current account (baterricho) does NOT have permission.
     echo.
-    echo Attempting to trigger a login prompt...
-    echo (If you have GitHub CLI installed, running 'gh auth login' may help)
-    git remote set-url origin https://github.com/202180176-ship-it/HANGARIN.git
+    echo [FORCE LOGIN] Attempting to clear cached credentials for github.com...
+    cmdkey /delete:LegacyGeneric:target=git:https://github.com
+    
+    echo.
+    echo Retrying push... A login prompt should appear now.
     git push origin main
 )
 
