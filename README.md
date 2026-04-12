@@ -42,6 +42,8 @@ GITHUB_CLIENT_SECRET=your-github-client-secret
 
 Restart Django after changing `.env`.
 
+For production or Vercel, do not use SQLite. Set `DATABASE_URL` to a PostgreSQL connection string and set a real `DJANGO_SECRET_KEY`.
+
 For Google login, create an OAuth client and use this redirect URI:
 
 - `http://127.0.0.1:8000/accounts/google/login/callback/`
@@ -85,3 +87,10 @@ python manage.py seed_fake_data --tasks 20 --max-subtasks 4 --max-notes 3
    - Add project path and virtualenv path.
 7. Set `ALLOWED_HOSTS` in `config/settings.py` to include your PythonAnywhere domain.
 8. Reload the web app.
+
+## Vercel Deployment Notes
+
+- Vercel serverless functions cannot use SQLite at `/var/task/db.sqlite3` for login/session writes.
+- Add a PostgreSQL database and set `DATABASE_URL` in the Vercel project environment.
+- Set `DJANGO_SECRET_KEY`, `DJANGO_DEBUG=0`, `ALLOWED_HOSTS`, and `CSRF_TRUSTED_ORIGINS` for your live domain.
+- Run Django migrations against that PostgreSQL database before testing login.

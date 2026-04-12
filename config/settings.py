@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,16 +36,86 @@ def load_env_file(env_path):
 load_env_file(BASE_DIR / ".env")
 
 
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+
+    return value.lower() in {"1", "true", "yes", "on"}
+
+
+def env_list(name, default=None):
+    value = os.getenv(name)
+    if not value:
+        return list(default or [])
+
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def build_postgres_database(database_url):
+    parsed = urlparse(database_url)
+    scheme = parsed.scheme.split("+", 1)[0]
+
+    if scheme not in {"postgres", "postgresql"}:
+        raise ValueError(f"Unsupported DATABASE_URL scheme: {parsed.scheme}")
+
+    query = parse_qs(parsed.query)
+    sslmode = query.get(
+        "sslmode",
+        [os.getenv("DB_SSLMODE", "require" if os.getenv("VERCEL") else "prefer")],
+    )[0]
+
+    options = {}
+    if sslmode:
+        options["sslmode"] = sslmode
+
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parsed.path.lstrip("/")),
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname or "",
+        "PORT": str(parsed.port or ""),
+        "CONN_MAX_AGE": int(os.getenv("DB_CONN_MAX_AGE", "0" if os.getenv("VERCEL") else "60")),
+        "DISABLE_SERVER_SIDE_CURSORS": env_bool("DB_DISABLE_SERVER_SIDE_CURSORS", default=True),
+        "OPTIONS": options,
+    }
+
+
+def build_database_settings():
+    database_url = (
+        os.getenv("DATABASE_URL")
+        or os.getenv("POSTGRES_URL_NON_POOLING")
+        or os.getenv("POSTGRES_URL")
+    )
+
+    if database_url:
+        return {"default": build_postgres_database(database_url)}
+
+    return {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-e9l00swz#_r&9i6y1r-!f1$gk+aw5jyy$&#o$796&p)5v1(po7"
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    os.getenv(
+        "SECRET_KEY",
+        "django-insecure-e9l00swz#_r&9i6y1r-!f1$gk+aw5jyy$&#o$796&p)5v1(po7",
+    ),
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "1").lower() in {"1", "true", "yes", "on"}
+DEBUG = env_bool("DJANGO_DEBUG", default=True)
 
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", [
     '127.0.0.1',
     'localhost',
     'testserver',
@@ -53,7 +124,14 @@ ALLOWED_HOSTS = [
     '192.168.100.14',
     'lithological-midsize-polyphonically.ngrok-free.app',
     '*' # Allows access from any ngrok URL automatically
-]
+])
+
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
+
+if os.getenv("VERCEL_URL"):
+    vercel_origin = f"https://{os.getenv('VERCEL_URL')}"
+    if vercel_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(vercel_origin)
 
 # Necessary for PythonAnywhere and other proxies to handle HTTPS correctly
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -117,12 +195,7 @@ SOCIALACCOUNT_ADAPTER = "tasks.adapters.HangarinSocialAccountAdapter"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+DATABASES = build_database_settings()
 
 
 # Password validation
@@ -154,6 +227,9 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
 
 
 # Static files (CSS, JavaScript, Images)
