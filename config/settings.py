@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import os
+import tempfile
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
@@ -52,6 +53,9 @@ def env_list(name, default=None):
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+IS_VERCEL = bool(os.getenv("VERCEL"))
+
+
 def build_postgres_database(database_url):
     parsed = urlparse(database_url)
     scheme = parsed.scheme.split("+", 1)[0]
@@ -82,15 +86,27 @@ def build_postgres_database(database_url):
     }
 
 
-def build_database_settings():
-    database_url = (
+def get_database_url():
+    return (
         os.getenv("DATABASE_URL")
         or os.getenv("POSTGRES_URL_NON_POOLING")
         or os.getenv("POSTGRES_URL")
     )
 
+
+def build_database_settings(database_url=None):
+    database_url = database_url or get_database_url()
+
     if database_url:
         return {"default": build_postgres_database(database_url)}
+
+    if IS_VERCEL:
+        return {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": Path(tempfile.gettempdir()) / "hangarin" / "db.sqlite3",
+            }
+        }
 
     return {
         "default": {
@@ -113,7 +129,7 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env_bool("DJANGO_DEBUG", default=True)
+DEBUG = env_bool("DJANGO_DEBUG", default=not IS_VERCEL)
 
 ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", [
     '127.0.0.1',
@@ -158,6 +174,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "tasks.middleware.ServerlessDatabaseBootstrapMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -195,7 +212,9 @@ SOCIALACCOUNT_ADAPTER = "tasks.adapters.HangarinSocialAccountAdapter"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = build_database_settings()
+DATABASE_URL = get_database_url()
+EPHEMERAL_SQLITE_DATABASE = IS_VERCEL and not DATABASE_URL
+DATABASES = build_database_settings(DATABASE_URL)
 
 
 # Password validation
@@ -230,6 +249,9 @@ USE_TZ = True
 
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
+
+if EPHEMERAL_SQLITE_DATABASE:
+    SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 
 
 # Static files (CSS, JavaScript, Images)
