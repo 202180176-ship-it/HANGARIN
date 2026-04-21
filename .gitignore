@@ -7,3 +7,12 @@ db.sqlite3
 .env
 *.log
 file/
+-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
