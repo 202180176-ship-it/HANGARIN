@@ -4,10 +4,11 @@
     <section class="panel panel--spacious">
         <div class="panel__header panel__header--spread">
             <div>
+                <p class="eyebrow">{{ section|default:"Collection" }}</p>
                 <h3>{{ page_title }}</h3>
-                <p class="panel__copy">{{ page_description }}</p>
+                {% if page_description %}<p class="panel__copy">{{ page_description }}</p>{% endif %}
             </div>
-            <a class="button button--primary" href="{{ create_url }}">
+            <a class="button button--primary" href="{{ create_url }}" data-testid="create-entity-btn">
                 <span class="material-symbols-rounded">add</span>
                 <span>{{ create_label }}</span>
             </a>
@@ -26,20 +27,18 @@
 
         <div class="search-row">
             <form method="get" class="search-form">
-                <input
-                    class="search-form__input"
-                    type="search"
-                    name="q"
-                    value="{{ query }}"
-                    placeholder="{{ search_placeholder }}"
-                >
-                <button class="button button--ghost" type="submit">
+                <input class="search-form__input"
+                       type="search" name="q"
+                       value="{{ query }}"
+                       placeholder="{{ search_placeholder }}"
+                       data-testid="search-input">
+                <button class="button button--ghost" type="submit" data-testid="search-submit">
                     <span class="material-symbols-rounded">search</span>
                     <span>Search</span>
                 </button>
             </form>
             {% if query %}
-                <a class="button button--ghost button--compact" href="{{ request.path }}">
+                <a class="button button--ghost button--compact" href="{{ request.path }}" data-testid="search-clear">
                     <span class="material-symbols-rounded">close</span>
                     <span>Clear</span>
                 </a>
@@ -50,9 +49,7 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        {% for column in table_columns %}
-                            <th>{{ column }}</th>
-                        {% endfor %}
+                        {% for column in table_columns %}<th>{{ column }}</th>{% endfor %}
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -69,16 +66,14 @@
                                 </td>
                             {% endfor %}
                             <td>
-                                <a class="table-action" href="{{ row.action_url }}">
+                                <a class="table-action" href="{{ row.action_url }}" data-testid="row-action">
                                     <span class="material-symbols-rounded">edit</span>
                                     <span>{{ row.action_label }}</span>
                                 </a>
                             </td>
                         </tr>
                     {% empty %}
-                        <tr>
-                            <td colspan="{{ table_columns|length|add:'1' }}" class="empty-state">{{ empty_message }}</td>
-                        </tr>
+                        <tr><td colspan="{{ table_columns|length|add:'1' }}" class="empty-state">{{ empty_message }}</td></tr>
                     {% endfor %}
                 </tbody>
             </table>
@@ -87,18 +82,18 @@
         {% if is_paginated %}
             <div class="pagination">
                 {% if page_obj.has_previous %}
-                    <a class="button button--ghost" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">
+                    <a class="button button--ghost button--compact" href="?q={{ query|urlencode }}&page={{ page_obj.previous_page_number }}">
                         <span class="material-symbols-rounded">chevron_left</span>
                         <span>Previous</span>
                     </a>
-                {% endif %}
-                <span class="pagination__summary">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                {% else %}<span></span>{% endif %}
+                <span class="pagination__summary">Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
                 {% if page_obj.has_next %}
-                    <a class="button button--ghost" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">
+                    <a class="button button--ghost button--compact" href="?q={{ query|urlencode }}&page={{ page_obj.next_page_number }}">
                         <span>Next</span>
                         <span class="material-symbols-rounded">chevron_right</span>
                     </a>
-                {% endif %}
+                {% else %}<span></span>{% endif %}
             </div>
         {% endif %}
     </section>
